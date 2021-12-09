@@ -1,2 +1,3 @@
-# miller-rabin
-Miller-Rabin primality test
+# Miller-Rabin
+
+Python implementation of the (deterministic) Miller-Rabin primality test for various bases. In progress!
