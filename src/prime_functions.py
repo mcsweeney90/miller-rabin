@@ -178,7 +178,7 @@ def miller_rabin(n, k=8, known_primes=None):
     BOOL
         True if prime, False otherwise.
         
-    FURTHER INFO
+    References
     ------------
     https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
     http://rosettacode.org/wiki/Miller%E2%80%93Rabin_primality_test#Python
@@ -190,7 +190,7 @@ def miller_rabin(n, k=8, known_primes=None):
         Returns True if n passes the witness test, with a as witness - i.e., n may be prime. 
         Returns False if it fails the test and is definitely composite.  
         """
-        x = pow(a, d, n)
+        x = pow(a, d, n) # d defined in function body, not best practice.
         if x in {1, n - 1}:
             return True
         for _ in range(r - 1):
@@ -200,11 +200,22 @@ def miller_rabin(n, k=8, known_primes=None):
         return False
     
     # Check for input errors.
-    assert isinstance(n, int), "Number must be an integer!" # TODO: int conversion for e.g. n.0?
-    assert n > 0, "Number must be greater than zero!"
+    if n < 0:
+        raise ValueError("Number must be greater than zero!")
+    
+    # If n is float of the form n.000... etc, then convert to int, else throw an error.
+    if isinstance(n, float):
+        i = int(n)
+        if abs(n - i) < 1e-6:
+            n = int(n)
+        else:
+            raise ValueError("Number must be an integer!")
+    
+    # assert isinstance(n, int), "Number must be an integer!" # TODO: int conversion for e.g. n.0?
+    # assert n > 0, "Number must be greater than zero!"
             
-    # Handle n = 1 separately (loops forever otherwise).
-    if n == 1:
+    # Handle n = 0 and n = 1 separately (loops forever otherwise).
+    if n in {0, 1}:
         return False
     
     # If known_primes not defined, use first 8 primes. 
@@ -226,7 +237,7 @@ def miller_rabin(n, k=8, known_primes=None):
         r += 1
     
     # Determine the witnesses to use. 
-    # TODO: compare timings with optimal bases that can be found online.
+    # TODO: compare timings with minimal bases that can be found online.
     if n < 2047:
         witnesses = [2]
     elif n < 1373653:
