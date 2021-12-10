@@ -1,6 +1,6 @@
 # Miller-Rabin
 
-Python implementation of the (deterministic) Miller-Rabin primality test for various bases. In progress!
+Python implementation of the Miller-Rabin primality test. In progress!
 
 ## Navigation
 
