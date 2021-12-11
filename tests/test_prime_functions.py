@@ -8,7 +8,7 @@ import pytest
 
 # import sys
 # sys.path.append('../src/') 
-from prime_functions import miller_rabin
+from src.prime_functions import miller_rabin
 
 class TestMillerRabin(object):
     """
