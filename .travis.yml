@@ -5,6 +5,5 @@ python:
 cache: pip
 install:
   - pip install -r requirements.txt
-  - export PYTHONPATH=$PYTHONPATH:$(pwd)
 script:
-  - python -m pytest tests
+  - pytest tests
