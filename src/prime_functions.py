@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Prime-related functions used for coding competitions etc. 
+Prime-related functions used for coding competitions etc.
 """
 
 import numpy as np
@@ -9,8 +9,8 @@ from math import sqrt, prod
 
 def prime_factors(n):
     """
-    Returns the prime factors of n. 
-    Fairly fast, although sympy.ntheory.factorint is about 3x faster. 
+    Returns the prime factors of n.
+    Fairly fast, although e.g., sympy.ntheory.factorint is about 3x faster.
 
     Parameters
     ----------
@@ -23,7 +23,7 @@ def prime_factors(n):
         Prime factors of n in form {p : multiplicity of p}.
     """
     # TODO: check valid input.
-    factors = {}   
+    factors = {}
     while n > 1:
         temp = n
         while n % 2 == 0:
@@ -32,9 +32,9 @@ def prime_factors(n):
                 factors[2] += 1
             except KeyError:
                 factors[2] = 1
-        for p in range(3, int(sqrt(n)) + 1, 2):            
-            if n % p == 0:                
-                n //= p 
+        for p in range(3, int(sqrt(n)) + 1, 2):
+            if n % p == 0:
+                n //= p
                 try:
                     factors[p] += 1
                 except KeyError:
@@ -42,7 +42,7 @@ def prime_factors(n):
                 break
         if n == temp: # n is prime.
             factors[n] = 1
-            n = 1  
+            n = 1
     return factors
 
 def num_divisors(n):
@@ -59,7 +59,7 @@ def num_divisors(n):
     -------
     INT
         Number of divisors of n.
-    """ 
+    """
     # TODO: check valid input.
     return prod(e + 1 for e in prime_factors(n).values())
 
@@ -83,7 +83,7 @@ def proper_divisors(n):
     for i in range(2, int(rt) + 1):
         if n % i == 0:
             divisors.append(i)
-            divisors.append(n//i)  
+            divisors.append(n//i)
     return divisors[:-1] if (n > 1 and rt % 1 == 0) else divisors
 
 def is_prime_trial(n):
@@ -119,7 +119,7 @@ def is_prime_trial(n):
 
 def get_primes(N):
     """
-    Get all primes less than or equal to N. 
+    Get all primes less than or equal to N.
 
     Parameters
     ----------
@@ -140,8 +140,8 @@ def get_primes(N):
 
 def get_primes_without_numpy(N):
     """
-    Get all primes less than or equal to N. Non-numpy version. 
-    Still fairly fast but not as fast as the numpy version above.
+    Get all primes less than or equal to N. Non-numpy version.
+    Still fairly fast but not as fast as the version above.
 
     Parameters
     ----------
@@ -177,18 +177,18 @@ def miller_rabin(n, k=8, known_primes=None):
     -------
     BOOL
         True if prime, False otherwise.
-        
+
     References
     ------------
     https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
     http://rosettacode.org/wiki/Miller%E2%80%93Rabin_primality_test#Python
-    http://miller-rabin.appspot.com/ 
+    http://miller-rabin.appspot.com/
     """
-    
+
     def maybe_prime(a):
         """
-        Returns True if n passes the witness test, with a as witness - i.e., n may be prime. 
-        Returns False if it fails the test and is definitely composite.  
+        Returns True if n passes the witness test, with a as witness - i.e., n may be prime.
+        Returns False if it fails the test and is definitely composite.
         """
         x = pow(a, d, n) # d defined in function body, not best practice.
         if x in {1, n - 1}:
@@ -198,11 +198,11 @@ def miller_rabin(n, k=8, known_primes=None):
             if x == n - 1:
                 return True
         return False
-    
+
     # Check for input errors.
     if n < 0:
         raise ValueError("Number must be greater than zero!")
-    
+
     # If n is float of the form n.000... etc, then convert to int, else throw an error.
     if isinstance(n, float):
         i = int(n)
@@ -210,33 +210,30 @@ def miller_rabin(n, k=8, known_primes=None):
             n = int(n)
         else:
             raise ValueError("Number must be an integer!")
-    
-    # assert isinstance(n, int), "Number must be an integer!" # TODO: int conversion for e.g. n.0?
-    # assert n > 0, "Number must be greater than zero!"
-            
+
     # Handle n = 0 and n = 1 separately (loops forever otherwise).
     if n in {0, 1}:
         return False
-    
-    # If known_primes not defined, use first 8 primes. 
-    # TODO: compute first p primes for parameter p?     
+
+    # If known_primes not defined, use first 8 primes.
+    # TODO: compute first p primes for parameter p?
     if known_primes is None:
         known_primes = {2, 3, 5, 7, 11, 13, 17, 19}
-    
+
     # Check against small set of known primes.
     if n in known_primes:
         return True
     if any((n % p) == 0 for p in known_primes):
         return False
-    
+
     # n may be prime, so start algorithm proper.
     # Decompose n = 2**r * d + 1.
     d, r = n - 1, 1
     while d % 2 == 0:
         d //= 2
         r += 1
-    
-    # Determine the witnesses to use. 
+
+    # Determine the witnesses to use.
     # TODO: compare timings with minimal bases that can be found online.
     if n < 2047:
         witnesses = [2]
@@ -263,21 +260,9 @@ def miller_rabin(n, k=8, known_primes=None):
     elif n < 318665857834031151167461:
         witnesses = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
     elif n < 3317044064679887385961981:
-        witnesses = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]    
-    else: 
+        witnesses = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
+    else:
         witnesses = np.random.choice(range(2, n - 1), size=k)
-        
+
     # Return True (i.e., probably prime) if all calls to maybe_prime are True, False otherwise.
-    return all(maybe_prime(a) for a in witnesses)  
-
-    
-# =============================================================================
-# Testing.
-# =============================================================================
-
-# N = 233 * 239
-# print(miller_rabin(N))
-
-
-
-        
+    return all(maybe_prime(a) for a in witnesses)
