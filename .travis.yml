@@ -5,5 +5,8 @@ python:
 cache: pip
 install:
   - pip install -e .
+  - pip install pytest-cov codecov
 script:
-  - pytest tests
+  - pytest --cov=src tests
+after_success:
+  - codecov
