@@ -262,9 +262,7 @@ def miller_rabin(n, k=8, known_primes=None):
     elif n < 3317044064679887385961981:
         witnesses = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
     else:
-        witnesses = list(np.random.choice(range(2, n - 1), size=k))
+        witnesses = [int(x) for x in np.random.choice(range(2, 1000), size=k)]
 
     # Return True (i.e., probably prime) if all calls to maybe_prime are True, False otherwise.
     return all(maybe_prime(a) for a in witnesses)
-
-
