@@ -266,3 +266,5 @@ def miller_rabin(n, k=8, known_primes=None):
 
     # Return True (i.e., probably prime) if all calls to maybe_prime are True, False otherwise.
     return all(maybe_prime(a) for a in witnesses)
+
+

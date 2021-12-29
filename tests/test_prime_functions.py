@@ -22,9 +22,10 @@ class TestMillerRabin(object):
     
     def test_invalid_float_input(self):
         tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
-        with pytest.raises(ValueError) as info:
-            map(miller_rabin, tests)
-        assert info.match("Number must be an integer!")
+        for n in tests:
+            with pytest.raises(ValueError) as info:
+                miller_rabin(n)
+            assert info.match("Number must be an integer!")
     
     def test_valid_float_input(self):
         n = 7 + 1e-10
