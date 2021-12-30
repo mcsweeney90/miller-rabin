@@ -6,11 +6,161 @@ Test functions in src/prime_functions.py.
 
 import pytest
 
-from prime_functions import miller_rabin
+from prime_functions import prime_factors, num_divisors, proper_divisors, is_prime_trial, miller_rabin
+
+class TestPrimeFactors(object):
+    """
+    Test prime_factors function. 
+    """
+    
+    def test_negative_input(self):
+        """
+        Test function raises a ValueError for negative input. 
+        """
+        with pytest.raises(ValueError) as info:
+            prime_factors(n=-1)
+        assert info.match("Number must be positive!")
+    
+    def test_invalid_float_input(self):
+        """
+        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
+        """
+        tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
+        for n in tests:
+            with pytest.raises(ValueError) as info:
+                prime_factors(n)
+            assert info.match("Number must be an integer!")
+    
+    def test_valid_float_input(self):
+        """
+        Test function is valid for float input sufficiently close to integer values.  
+        """
+        n = 7 + 1e-10
+        expected = prime_factors(7)
+        actual = prime_factors(n)
+        assert actual == expected, f"prime_factors({n}) returned {actual} instead of {expected}"
+        
+    def test_zero(self):
+        """
+        Test function returns empty dict for n = 0.  
+        """
+        actual = prime_factors(0)
+        expected = {}
+        assert actual == expected, f"prime_factors(0) returned {actual} instead of {expected}"
+        
+    def test_one(self):
+        """
+        Test function returns empty dict for n = 1.  
+        """
+        actual = prime_factors(1)
+        expected = {}
+        assert actual == expected, f"prime_factors(1) returned {actual} instead of {expected}"
+        
+class TestNumDivisors(object):
+    """
+    Test num_divisors function. 
+    Input errors should be caught by prime_factors, so only need to check logic errors. 
+    """    
+          
+    def test_zero(self):
+        """
+        Test function returns 1 for n = 0.  
+        """
+        actual = num_divisors(0)
+        expected = 1
+        assert actual == expected, f"num_divisors(0) returned {actual} instead of {expected}"
+        
+    def test_one(self):
+        """
+        Test function returns 1 for n = 1.  
+        """
+        actual = num_divisors(1)
+        expected = 1
+        assert actual == expected, f"num_divisors(1) returned {actual} instead of {expected}"
+        
+    def test_primes(self):
+        """
+        Test function returns 2 for primes.  
+        """
+        actual = tuple(num_divisors(p) for p in [2, 3, 5, 7, 11, 13, 17, 19])
+        expected = tuple(2 for p in [2, 3, 5, 7, 11, 13, 17, 19])
+        assert actual == expected, "num_divisors did not return 2 for a known prime!"
+        
+    def test_composites(self):
+        """
+        Test function returns correct number of divisors for some interesting composites.  
+        """
+        actual = tuple(num_divisors(n) for n in [4, 6, 8, 9, 10, 12, 14, 15, 16, 18])
+        expected = tuple(3, 4, 4, 3, 4, 6, 4, 4, 5, 6)
+        assert actual == expected, "num_divisors was incorrect for a small composite!"
+        
+class TestProperDivisors(object):
+    """
+    Test proper_divisors function. 
+    """
+    
+    def test_negative_input(self):
+        """
+        Test function raises a ValueError for negative input. 
+        """
+        with pytest.raises(ValueError) as info:
+            proper_divisors(n=-1)
+        assert info.match("Number must be positive!")
+    
+    def test_invalid_float_input(self):
+        """
+        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
+        """
+        tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
+        for n in tests:
+            with pytest.raises(ValueError) as info:
+                proper_divisors(n)
+            assert info.match("Number must be an integer!")
+    
+    def test_valid_float_input(self):
+        """
+        Test function is valid for float input sufficiently close to integer values.  
+        """
+        n = 7 + 1e-10
+        expected = proper_divisors(7)
+        actual = proper_divisors(n)
+        assert actual == expected, f"proper_divisors({n}) returned {actual} instead of {expected}"
+        
+class TestIsPrimeTrial(object):
+    """
+    Test is_prime_trial function. 
+    """
+    
+    def test_negative_input(self):
+        """
+        Test function raises a ValueError for negative input. 
+        """
+        with pytest.raises(ValueError) as info:
+            is_prime_trial(n=-1)
+        assert info.match("Number must be positive!")
+    
+    def test_invalid_float_input(self):
+        """
+        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
+        """
+        tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
+        for n in tests:
+            with pytest.raises(ValueError) as info:
+                is_prime_trial(n)
+            assert info.match("Number must be an integer!")
+    
+    def test_valid_float_input(self):
+        """
+        Test function is valid for float input sufficiently close to integer values.  
+        """
+        n = 7 + 1e-10
+        expected = is_prime_trial(7)
+        actual = is_prime_trial(n)
+        assert actual == expected, f"is_prime_trial({n}) returned {actual} instead of {expected}"
 
 class TestMillerRabin(object):
     """
-    Test miller_rabin function in miller_rabin.py. 
+    Test miller_rabin function. 
     """
     
     def test_negative_input(self):
@@ -19,7 +169,7 @@ class TestMillerRabin(object):
         """
         with pytest.raises(ValueError) as info:
             miller_rabin(n=-1)
-        assert info.match("Number must be greater than zero!")
+        assert info.match("Number must be positive!")
     
     def test_invalid_float_input(self):
         """

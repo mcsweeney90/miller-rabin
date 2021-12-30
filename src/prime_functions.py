@@ -22,7 +22,18 @@ def prime_factors(n):
     factors : DICT
         Prime factors of n in form {p : multiplicity of p}.
     """
-    # TODO: check valid input.
+    # Check for input errors.
+    if n < 0:
+        raise ValueError("Number must be positive!")
+
+    # If n is float of the form n.000... etc, then convert to int, else throw an error.
+    if isinstance(n, float):
+        i = int(n)
+        if abs(n - i) < 1e-6:
+            n = int(n)
+        else:
+            raise ValueError("Number must be an integer!")
+            
     factors = {}
     while n > 1:
         temp = n
@@ -33,13 +44,12 @@ def prime_factors(n):
             except KeyError:
                 factors[2] = 1
         for p in range(3, int(sqrt(n)) + 1, 2):
-            if n % p == 0:
+            while n % p == 0:
                 n //= p
                 try:
                     factors[p] += 1
                 except KeyError:
                     factors[p] = 1
-                break
         if n == temp: # n is prime.
             factors[n] = 1
             n = 1
@@ -59,8 +69,7 @@ def num_divisors(n):
     -------
     INT
         Number of divisors of n.
-    """
-    # TODO: check valid input.
+    """        
     return prod(e + 1 for e in prime_factors(n).values())
 
 def proper_divisors(n):
@@ -77,7 +86,18 @@ def proper_divisors(n):
     LIST
         Proper divisors of n.
     """
-    # TODO: check valid input.
+    # Check for input errors.
+    if n <= 0:
+        raise ValueError("Number must be positive!")
+
+    # If n is float of the form n.000... etc, then convert to int, else throw an error.
+    if isinstance(n, float):
+        i = int(n)
+        if abs(n - i) < 1e-6:
+            n = int(n)
+        else:
+            raise ValueError("Number must be an integer!")
+            
     divisors = [1]
     rt = sqrt(n)
     for i in range(2, int(rt) + 1):
@@ -85,37 +105,6 @@ def proper_divisors(n):
             divisors.append(i)
             divisors.append(n//i)
     return divisors[:-1] if (n > 1 and rt % 1 == 0) else divisors
-
-def is_prime_trial(n):
-    """
-    Trial division primality check. Returns True if n is prime.
-    Uses the fact that all primes other than 2 and 3 are of the form 6k +/- 1.
-    Usually only ever used to show how impractical it is.
-
-    Parameters
-    ----------
-    n : INT
-        Possible prime.
-
-    Returns
-    -------
-    BOOL
-        True if prime, false otherwise.
-    """
-    # TODO: check valid input.
-    if n == 1:
-        return False
-    elif n in {2, 3}:
-        return True
-    if n % 2 == 0 or n % 3 == 0:
-        return False
-    a, b = 5, 2
-    while a * a <= n:
-        if n % a == 0:
-            return False
-        a += b
-        b = 6 - b
-    return True
 
 def get_primes(N):
     """
@@ -160,6 +149,48 @@ def get_primes_without_numpy(N):
             sieve[p*p//2::p] = [False] * ((N-p*p-1)//(2*p)+1)
     return [2] + [2*p+1 for p in range(1, N//2) if sieve[p]]
 
+def is_prime_trial(n):
+    """
+    Trial division primality check. Returns True if n is prime.
+    Uses the fact that all primes other than 2 and 3 are of the form 6k +/- 1.
+    Usually only ever used to show how impractical it is.
+
+    Parameters
+    ----------
+    n : INT
+        Possible prime.
+
+    Returns
+    -------
+    BOOL
+        True if prime, false otherwise.
+    """
+    # Check for input errors.
+    if n < 0:
+        raise ValueError("Number must be positive!")
+
+    # If n is float of the form n.000... etc, then convert to int, else throw an error.
+    if isinstance(n, float):
+        i = int(n)
+        if abs(n - i) < 1e-6:
+            n = int(n)
+        else:
+            raise ValueError("Number must be an integer!")
+            
+    if n in {0, 1}:
+        return False
+    elif n in {2, 3}:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    a, b = 5, 2
+    while a * a <= n:
+        if n % a == 0:
+            return False
+        a += b
+        b = 6 - b
+    return True
+
 def miller_rabin(n, k=8, known_primes=None):
     """
     Miller-Rabin primality test.
@@ -201,7 +232,7 @@ def miller_rabin(n, k=8, known_primes=None):
 
     # Check for input errors.
     if n < 0:
-        raise ValueError("Number must be greater than zero!")
+        raise ValueError("Number must be positive!")
 
     # If n is float of the form n.000... etc, then convert to int, else throw an error.
     if isinstance(n, float):
@@ -266,17 +297,3 @@ def miller_rabin(n, k=8, known_primes=None):
 
     # Return True (i.e., probably prime) if all calls to maybe_prime are True, False otherwise.
     return all(maybe_prime(a) for a in witnesses)
-
-composites = [23**2, 233 * 239, # Simple composites 
-            561, 41041, 825265, 321197185, 5394826801, 232250619601, 9746347772161, 1436697831295441,
-            60977817398996785, 7156857700403137441, 1791562810662585767521, 87674969936234821377601,
-            6553130926752006031481761, 1590231231043178376951698401, 35237869211718889547310642241,
-            32809426840359564991177172754241, 2810864562635368426005268142616001, 
-            349407515342287435050603204719587201, # Carmichael numbers
-            25326001, 161304001, 960946321, 1157839381, 3215031751, 3697278427, 5764643587, 
-            6770862367, 14386156093, 15579919981, 18459366157, 19887974881, 21276028621, # Strong pseudoprimes for bases 2, 3, 5
-            3825123056546413051 # Strong pseudoprime for bases 2, 3, 5, 7, 11, 13, 17, 19, and 23 
-            ] 
-
-actual = not any(miller_rabin(c) for c in composites) 
-print(actual)
