@@ -91,7 +91,7 @@ class TestNumDivisors(object):
         Test function returns correct number of divisors for some interesting composites.  
         """
         actual = tuple(num_divisors(n) for n in [4, 6, 8, 9, 10, 12, 14, 15, 16, 18])
-        expected = tuple(3, 4, 4, 3, 4, 6, 4, 4, 5, 6)
+        expected = (3, 4, 4, 3, 4, 6, 4, 4, 5, 6)
         assert actual == expected, "num_divisors was incorrect for a small composite!"
         
 class TestProperDivisors(object):
