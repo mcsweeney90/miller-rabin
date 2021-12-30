@@ -6,8 +6,6 @@ Test functions in src/prime_functions.py.
 
 import pytest
 
-# import sys
-# sys.path.append('../src/') 
 from prime_functions import miller_rabin
 
 class TestMillerRabin(object):
@@ -16,11 +14,17 @@ class TestMillerRabin(object):
     """
     
     def test_negative_input(self):
+        """
+        Test function raises a ValueError for negative input. 
+        """
         with pytest.raises(ValueError) as info:
             miller_rabin(n=-1)
         assert info.match("Number must be greater than zero!")
     
     def test_invalid_float_input(self):
+        """
+        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
+        """
         tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
         for n in tests:
             with pytest.raises(ValueError) as info:
@@ -28,13 +32,21 @@ class TestMillerRabin(object):
             assert info.match("Number must be an integer!")
     
     def test_valid_float_input(self):
+        """
+        Test function is valid for float input sufficiently close to integer values.  
+        """
         n = 7 + 1e-10
         expected = miller_rabin(7)
         actual = miller_rabin(n)
         assert actual == expected, f"miller_rabin{n}) returned {actual} instead of {expected}"
     
     def test_primes(self):
-        primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,
+        """
+        Ensure that miller_rabin returns True for known primes.
+        Examples extracted from this relevant Wikipedia page: 
+            https://en.wikipedia.org/wiki/List_of_prime_numbers
+        """
+        primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,
                   53, 59, 61, 67, 71, 73, 79, 83, 89, 97, # All primes less than 100
                   877, 27644437, 35742549198872617291353508656626642567, 359334085968622831041960188598043661065388726959079837, # Bell primes
                   211, 2311, 200560490131, # Euclid primes
@@ -58,15 +70,31 @@ class TestMillerRabin(object):
                   683, 2731, 43691, 174763, 2796203, 715827883, 2932031007403, 768614336404564651, 
                   201487636602438195784363, 845100400152152934331135470251, 56713727820156410577229101238628035243, # Wagstaff
                   383, 32212254719, 2833419889721787128217599, 195845982777569926302400511, 4776913109852041418248056622882488319 # Woodall
-                  } 
-        expected = True
+                  ]
         actual = all(miller_rabin(p) for p in primes)
+        expected = True
         assert actual == expected, "miller_rabin returned False for a known prime!"  # TODO: print which ones.
     
     def test_composites(self):
-        expected = True
-        composites = [233 * 239] # TODO: strong pseudoprimes.
+        """
+        Ensure that miller_rabin returns False for notable composites. 
+        See:
+            https://en.wikipedia.org/wiki/Strong_pseudoprime
+            http://www.s369624816.websitehome.co.uk/rgep/cartable.html (list of Carmichael numbers)
+            https://math.dartmouth.edu/~carlp/PDF/paper25.pdf (strong pseudoprimes for bases 2, 3, and 5)
+        """
+        composites = [23**2, 233 * 239, # Simple composites 
+                      561, 41041, 825265, 321197185, 5394826801, 232250619601, 9746347772161, 1436697831295441,
+                      60977817398996785, 7156857700403137441, 1791562810662585767521, 87674969936234821377601,
+                      6553130926752006031481761, 1590231231043178376951698401, 35237869211718889547310642241,
+                      32809426840359564991177172754241, 2810864562635368426005268142616001, 
+                      349407515342287435050603204719587201, # Carmichael numbers
+                      25326001, 161304001, 960946321, 1157839381, 3215031751, 3697278427, 5764643587, 
+                      6770862367, 14386156093, 15579919981, 18459366157, 19887974881, 21276028621, # Strong pseudoprimes for bases 2, 3, 5
+                      3825123056546413051 # Strong pseudoprime for bases 2, 3, 5, 7, 11, 13, 17, 19, and 23 
+                      ] 
         actual = not any(miller_rabin(c) for c in composites) 
+        expected = True
         assert actual == expected, "miller_rabin returned True for a known composite!" # TODO: print which ones.
         
    
