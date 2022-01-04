@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Prime-related functions used for coding competitions etc.
+Prime number functions I've often found useful for coding challenges etc.
 """
 
 import numpy as np
@@ -191,16 +191,118 @@ def is_prime_trial(n):
         b = 6 - b
     return True
 
-def miller_rabin(n, k=8, known_primes=None):
+def miller_rabin_classic(n, n_known_primes=8):
     """
     Miller-Rabin primality test.
+    Uses known deterministic set of witnesses for n < ~ 10^24. 
 
     Parameters
     ----------
     n : INT
         The number to check if prime.
     k : INT
-        Number of witnesses to use for probabilistic version.
+        Number of witnesses to use for probabilistic version. 
+        The default is 8.
+    known_primes : ITERABLE, optional
+        Small set of known primes to test against. The default is None.
+
+    Returns
+    -------
+    BOOL
+        True if prime, False otherwise.
+
+    References
+    ------------
+    https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
+    http://rosettacode.org/wiki/Miller%E2%80%93Rabin_primality_test#Python
+    https://oeis.org/A014233
+    """
+
+    def maybe_prime(a):
+        """
+        Returns True if n passes the witness test, with a as witness - i.e., n may be prime.
+        Returns False if it fails the test and is definitely composite.
+        """
+        x = pow(a, d, n) # d defined in function body, not best practice.
+        if x in {1, n - 1}:
+            return True
+        for _ in range(r - 1):
+            x = (x * x) % n
+            if x == n - 1:
+                return True
+        return False
+
+    # Check for input errors.
+    if n < 0:
+        raise ValueError("Number must be positive!")
+
+    # If n is float of the form n.000... etc, then convert to int, else throw an error.
+    if isinstance(n, float):
+        i = int(n)
+        if abs(n - i) < 1e-6:
+            n = int(n)
+        else:
+            raise ValueError("Number must be an integer!")
+
+    # Handle n = 0 and n = 1 separately (loops forever otherwise).
+    if n in {0, 1}:
+        return False
+    
+    # TODO: decide what to do about limit - another parameter?
+    primes = get_primes(50)
+    known_primes = primes[:n_known_primes] # TODO: need a check here...
+
+    # Check against small set of known primes.
+    if n in known_primes:
+        return True
+    if any((n % p) == 0 for p in known_primes):
+        return False
+
+    # n may be prime, so start algorithm proper.
+    # Decompose n = 2**r * d + 1.
+    d, r = n - 1, 1
+    while d % 2 == 0:
+        d //= 2
+        r += 1        
+
+    # Determine the witnesses to use.
+    if n < 2047:
+        witnesses = primes[:1] #[2]
+    elif n < 1373653:
+        witnesses = primes[:2] #[2, 3]
+    elif n < 25326001:
+        witnesses = primes[:3] #[2, 3, 5]
+    elif n < 3215031751:
+        witnesses = primes[:4] #[2, 3, 5, 7]
+    elif n < 2152302898747:
+        witnesses = primes[:5] #[2, 3, 5, 7, 11]
+    elif n < 3474749660383:
+        witnesses = primes[:6] #[2, 3, 5, 7, 11, 13]
+    elif n < 341550071728321:
+        witnesses = primes[:7] #[2, 3, 5, 7, 11, 13, 17]  
+    elif n < 3825123056546413051:
+        witnesses = primes[:9] #[2, 3, 5, 7, 11, 13, 17, 19, 23] 
+    elif n < 318665857834031151167461:
+        witnesses = primes[:12] #[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] 
+    elif n < 3317044064679887385961981:
+        witnesses = primes[:13] #[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41] # primes[:13]
+    else:
+        witnesses = primes # TODO: haven't decided what to do here.
+
+    # Return True (i.e., probably prime) if all calls to maybe_prime are True, False otherwise.
+    return all(maybe_prime(a) for a in witnesses)
+
+def miller_rabin_minimal(n, k=8, known_primes=None):
+    """
+    TODO. Miller-Rabin primality test with witness sets of minimal size.
+
+    Parameters
+    ----------
+    n : INT
+        The number to check if prime.
+    k : INT
+        Number of witnesses to use for probabilistic version. 
+        The default is 8.
     known_primes : ITERABLE, optional
         Small set of known primes to test against. The default is None.
 
@@ -265,35 +367,20 @@ def miller_rabin(n, k=8, known_primes=None):
         r += 1
 
     # Determine the witnesses to use.
-    # TODO: compare timings with minimal bases that can be found online.
-    if n < 2047:
-        witnesses = [2]
-    elif n < 1373653:
-        witnesses = [2, 3]
-    elif n < 9080191:
-        witnesses = [31, 73]
-    elif n < 25326001:
-        witnesses = [2, 3, 5]
-    elif n < 3215031751:
-        witnesses = [2, 3, 5, 7]
-    elif n < 4759123141:
-        witnesses = [2, 7, 61]
-    elif n < 1122004669633:
-        witnesses = [2, 13, 23, 1662803]
-    elif n < 2152302898747:
-        witnesses = [2, 3, 5, 7, 11]
-    elif n < 3474749660383:
-        witnesses = [2, 3, 5, 7, 11, 13]
-    elif n < 341550071728321:
-        witnesses = [2, 3, 5, 7, 11, 13, 17]
-    elif n < 3825123056546413051:
-        witnesses = [2, 3, 5, 7, 11, 13, 17, 19, 23]
-    elif n < 318665857834031151167461:
-        witnesses = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
-    elif n < 3317044064679887385961981:
-        witnesses = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
+    if n < 341531: # TODO: should this be <= ?
+        witnesses = [9345883071009581737]
+    elif n < 1050535501:
+        witnesses = [336781006125, 9639812373923155]
+    elif n < 350269456337:
+        witnesses = [4230279247111683200, 14694767155120705706, 16641139526367750375]
+    elif n < 55245642489451:
+        witnesses = [2, 141889084524735, 1199124725622454117, 11096072698276303650]
+    elif n < 7999252175582851:
+        witnesses = [2, 4130806001517, 149795463772692060, 186635894390467037, 3967304179347715805]
+    elif n < 585226005592931977:
+        witnesses = [2, 123635709730000, 9233062284813009, 43835965440333360, 761179012939631437, 1263739024124850375]
     else:
-        witnesses = [int(x) for x in np.random.choice(range(2, 1000), size=k)]
+        witnesses = [2, 325, 9375, 28178, 450775, 9780504, 1795265022]
 
     # Return True (i.e., probably prime) if all calls to maybe_prime are True, False otherwise.
     return all(maybe_prime(a) for a in witnesses)

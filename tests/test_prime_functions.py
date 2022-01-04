@@ -6,7 +6,8 @@ Test functions in src/prime_functions.py.
 
 import pytest
 
-from prime_functions import prime_factors, num_divisors, proper_divisors, is_prime_trial, miller_rabin
+from prime_functions import prime_factors, num_divisors, proper_divisors, \
+    is_prime_trial, miller_rabin_classic
 
 class TestPrimeFactors(object):
     """
@@ -158,7 +159,7 @@ class TestIsPrimeTrial(object):
         actual = is_prime_trial(n)
         assert actual == expected, f"is_prime_trial({n}) returned {actual} instead of {expected}"
 
-class TestMillerRabin(object):
+class TestMillerRabinClassic(object):
     """
     Test miller_rabin function. 
     """
@@ -168,7 +169,7 @@ class TestMillerRabin(object):
         Test function raises a ValueError for negative input. 
         """
         with pytest.raises(ValueError) as info:
-            miller_rabin(n=-1)
+            miller_rabin_classic(n=-1)
         assert info.match("Number must be positive!")
     
     def test_invalid_float_input(self):
@@ -178,7 +179,7 @@ class TestMillerRabin(object):
         tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
         for n in tests:
             with pytest.raises(ValueError) as info:
-                miller_rabin(n)
+                miller_rabin_classic(n)
             assert info.match("Number must be an integer!")
     
     def test_valid_float_input(self):
@@ -186,9 +187,9 @@ class TestMillerRabin(object):
         Test function is valid for float input sufficiently close to integer values.  
         """
         n = 7 + 1e-10
-        expected = miller_rabin(7)
-        actual = miller_rabin(n)
-        assert actual == expected, f"miller_rabin{n}) returned {actual} instead of {expected}"
+        expected = miller_rabin_classic(7)
+        actual = miller_rabin_classic(n)
+        assert actual == expected, f"miller_rabin_classic{n}) returned {actual} instead of {expected}"
     
     def test_primes(self):
         """
@@ -221,9 +222,9 @@ class TestMillerRabin(object):
                   201487636602438195784363, 845100400152152934331135470251, 56713727820156410577229101238628035243, # Wagstaff
                   383, 32212254719, 2833419889721787128217599, 195845982777569926302400511, 4776913109852041418248056622882488319 # Woodall
                   ]
-        actual = all(miller_rabin(p) for p in primes)
+        actual = all(miller_rabin_classic(p) for p in primes)
         expected = True
-        assert actual == expected, "miller_rabin returned False for a known prime!"  # TODO: print which ones.
+        assert actual == expected, "miller_rabin_classic returned False for a known prime!"  # TODO: print which ones.
     
     def test_composites(self):
         """
@@ -243,9 +244,9 @@ class TestMillerRabin(object):
                       6770862367, 14386156093, 15579919981, 18459366157, 19887974881, 21276028621, # Strong pseudoprimes for bases 2, 3, 5
                       3825123056546413051 # Strong pseudoprime for bases 2, 3, 5, 7, 11, 13, 17, 19, and 23 
                       ] 
-        actual = not any(miller_rabin(c) for c in composites) 
+        actual = not any(miller_rabin_classic(c) for c in composites) 
         expected = True
-        assert actual == expected, "miller_rabin returned True for a known composite!" # TODO: print which ones.
+        assert actual == expected, "miller_rabin_classic returned True for a known composite!" # TODO: print which ones.
         
    
     
