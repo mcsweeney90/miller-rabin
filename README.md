@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/mcsweeney90/miller-rabin/branch/main/graph/badge.svg?token=SLBOGBDXU7)](https://codecov.io/gh/mcsweeney90/miller-rabin)
 # Miller-Rabin
 
-Python implementation of the Miller-Rabin primality test (and some other prime number-adjacent functions that have often been useful).   
+This repository contains a Python implementation of the Miller-Rabin primality test and a few other prime number-based functions. I've occasionally found them useful for coding challenges and that kind of thing, however this was really just an exercise for myself while learning to use `pytest`.     
 
 ## Navigation
 

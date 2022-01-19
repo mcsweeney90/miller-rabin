@@ -7,7 +7,8 @@ Test functions in src/prime_functions.py.
 import pytest
 
 from prime_functions import prime_factors, num_divisors, proper_divisors, \
-    is_prime_trial, miller_rabin_classic
+    get_primes, get_primes_without_numpy, \
+    is_prime_trial, miller_rabin_classic, miller_rabin_minimal
 
 class TestPrimeFactors(object):
     """
@@ -126,6 +127,104 @@ class TestProperDivisors(object):
         expected = proper_divisors(7)
         actual = proper_divisors(n)
         assert actual == expected, f"proper_divisors({n}) returned {actual} instead of {expected}"
+
+class TestGetPrimes(object):
+    """
+    Test get_primes function. 
+    TODO: test correct output. 
+    """
+    
+    def test_negative_input(self):
+        """
+        Test function raises a ValueError for negative input. 
+        """
+        with pytest.raises(ValueError) as info:
+            get_primes(N=-1)
+        assert info.match("Number must be positive!")
+    
+    def test_one(self):
+        """
+        Test function raises a ValueError for N = 1. 
+        """
+        with pytest.raises(ValueError) as info:
+            get_primes(N=1)
+        assert info.match("There are no primes smaller than 2!")
+    
+    def test_two(self):
+        """
+        Test function raises a ValueError for N = 2. 
+        """
+        with pytest.raises(ValueError) as info:
+            get_primes(N=2)
+        assert info.match("There are no primes smaller than 2!")
+    
+    def test_invalid_float_input(self):
+        """
+        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
+        """
+        tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
+        for N in tests:
+            with pytest.raises(ValueError) as info:
+                get_primes(N)
+            assert info.match("Number must be an integer!")
+    
+    def test_valid_float_input(self):
+        """
+        Test function is valid for float input sufficiently close to integer values.  
+        """
+        N = 7 + 1e-10
+        expected = get_primes(7)
+        actual = get_primes(N)
+        assert actual == expected, f"get_primes({N}) returned {actual} instead of {expected}"
+
+class TestGetPrimesWithoutNumpy(object):
+    """
+    Test get_primes_without_numpy function. 
+    TODO: test correct output. 
+    """
+    
+    def test_negative_input(self):
+        """
+        Test function raises a ValueError for negative input. 
+        """
+        with pytest.raises(ValueError) as info:
+            get_primes_without_numpy(N=-1)
+        assert info.match("Number must be positive!")
+    
+    def test_one(self):
+        """
+        Test function raises a ValueError for N = 1. 
+        """
+        with pytest.raises(ValueError) as info:
+            get_primes_without_numpy(N=1)
+        assert info.match("There are no primes smaller than 2!")
+    
+    def test_two(self):
+        """
+        Test function raises a ValueError for N = 2. 
+        """
+        with pytest.raises(ValueError) as info:
+            get_primes_without_numpy(N=2)
+        assert info.match("There are no primes smaller than 2!")
+    
+    def test_invalid_float_input(self):
+        """
+        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
+        """
+        tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
+        for N in tests:
+            with pytest.raises(ValueError) as info:
+                get_primes_without_numpy(N)
+            assert info.match("Number must be an integer!")
+    
+    def test_valid_float_input(self):
+        """
+        Test function is valid for float input sufficiently close to integer values.  
+        """
+        N = 7 + 1e-10
+        expected = get_primes(7)
+        actual = get_primes_without_numpy(N)
+        assert actual == expected, f"get_primes_without_numpy({N}) returned {actual} instead of {expected}"
         
 class TestIsPrimeTrial(object):
     """
@@ -200,24 +299,24 @@ class TestMillerRabinClassic(object):
         primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,
                   53, 59, 61, 67, 71, 73, 79, 83, 89, 97, # All primes less than 100
                   877, 27644437, 35742549198872617291353508656626642567, 359334085968622831041960188598043661065388726959079837, # Bell primes
-                  211, 2311, 200560490131, # Euclid primes
+                  211, 2311, 200560490131, # Euclid 
                   719, 5039, 39916801, 479001599, 87178291199, 10888869450418352160768000001, 265252859812191058636308479999999, 
-                  263130836933693530167218012159999999, 8683317618811886495518194401279999999, # Factorial primes
-                  257, 65537, # Fermat primes
+                  263130836933693530167218012159999999, 8683317618811886495518194401279999999, # Factorial 
+                  257, 65537, # Fermat 
                   233, 1597, 28657, 514229, 433494437, 2971215073, 99194853094755497, 
-                  1066340417491710595814572169, 19134702400093278081449423917, # Fibonacci primes
-                  113, 167, 269, 389, 419, 509, 659, 839, 1049, 1259, 1889, # Highly cototient primes
+                  1066340417491710595814572169, 19134702400093278081449423917, # Fibonacci 
+                  113, 167, 269, 389, 419, 509, 659, 839, 1049, 1259, 1889, # Highly cototient 
                   593, 32993, 2097593, 8589935681, 59604644783353249, 523347633027360537213687137, 
-                  43143988327398957279342419750374600193, # Leyland primes 
+                  43143988327398957279342419750374600193, # Leyland 
                   127, 8191, 131071, 524287, 2147483647, 2305843009213693951, 618970019642690137449562111, 
-                  162259276829213363391578010288127, 170141183460469231731687303715884105727, # Mersenne primes
-                  1361, 2521008887, 16022236204009818131831320183, # Mills primes
-                  239, 9369319, 63018038201, 489133282872437279, 19175002942688032928599, # Newman-Shanks-Williams primes
-                  40487, 6692367337, # Non-generous primes
+                  162259276829213363391578010288127, 170141183460469231731687303715884105727, # Mersenne 
+                  1361, 2521008887, 16022236204009818131831320183, # Mills 
+                  239, 9369319, 63018038201, 489133282872437279, 19175002942688032928599, # Newman-Shanks-Williams 
+                  40487, 6692367337, # Non-generous 
                   5741, 33461, 44560482149, 1746860020068409, 68480406462161287469, 13558774610046711780701, 
-                  4125636888562548868221559797461449,  # Pell primes 
-                  211, 2309, 2311, 30029, 200560490131, 304250263527209, 23768741896345550770650537601358309, # Primorial primes
-                  1111111111111111111, 11111111111111111111111, # Repunit primes
+                  4125636888562548868221559797461449,  # Pell 
+                  211, 2309, 2311, 30029, 200560490131, 304250263527209, 23768741896345550770650537601358309, # Primorial 
+                  1111111111111111111, 11111111111111111111111, # Repunit 
                   683, 2731, 43691, 174763, 2796203, 715827883, 2932031007403, 768614336404564651, 
                   201487636602438195784363, 845100400152152934331135470251, 56713727820156410577229101238628035243, # Wagstaff
                   383, 32212254719, 2833419889721787128217599, 195845982777569926302400511, 4776913109852041418248056622882488319 # Woodall
@@ -248,5 +347,92 @@ class TestMillerRabinClassic(object):
         expected = True
         assert actual == expected, "miller_rabin_classic returned True for a known composite!" # TODO: print which ones.
         
-   
+class TestMillerRabinMinimal(object):
+    """
+    Test miller_rabin function. 
+    """
+    
+    def test_negative_input(self):
+        """
+        Test function raises a ValueError for negative input. 
+        """
+        with pytest.raises(ValueError) as info:
+            miller_rabin_minimal(n=-1)
+        assert info.match("Number must be positive!")
+    
+    def test_invalid_float_input(self):
+        """
+        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
+        """
+        tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
+        for n in tests:
+            with pytest.raises(ValueError) as info:
+                miller_rabin_minimal(n)
+            assert info.match("Number must be an integer!")
+    
+    def test_valid_float_input(self):
+        """
+        Test function is valid for float input sufficiently close to integer values.  
+        """
+        n = 7 + 1e-10
+        expected = miller_rabin_minimal(7)
+        actual = miller_rabin_minimal(n)
+        assert actual == expected, f"miller_rabin_minimal{n}) returned {actual} instead of {expected}"
+    
+    def test_primes(self):
+        """
+        Ensure that miller_rabin returns True for known primes.
+        Examples extracted from this relevant Wikipedia page: 
+            https://en.wikipedia.org/wiki/List_of_prime_numbers
+        """
+        primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,
+                  53, 59, 61, 67, 71, 73, 79, 83, 89, 97, # All primes less than 100
+                  877, 27644437, 35742549198872617291353508656626642567, 359334085968622831041960188598043661065388726959079837, # Bell primes
+                  211, 2311, 200560490131, # Euclid 
+                  719, 5039, 39916801, 479001599, 87178291199, 10888869450418352160768000001, 265252859812191058636308479999999, 
+                  263130836933693530167218012159999999, 8683317618811886495518194401279999999, # Factorial 
+                  257, 65537, # Fermat 
+                  233, 1597, 28657, 514229, 433494437, 2971215073, 99194853094755497, 
+                  1066340417491710595814572169, 19134702400093278081449423917, # Fibonacci 
+                  113, 167, 269, 389, 419, 509, 659, 839, 1049, 1259, 1889, # Highly cototient 
+                  593, 32993, 2097593, 8589935681, 59604644783353249, 523347633027360537213687137, 
+                  43143988327398957279342419750374600193, # Leyland 
+                  127, 8191, 131071, 524287, 2147483647, 2305843009213693951, 618970019642690137449562111, 
+                  162259276829213363391578010288127, 170141183460469231731687303715884105727, # Mersenne 
+                  1361, 2521008887, 16022236204009818131831320183, # Mills 
+                  239, 9369319, 63018038201, 489133282872437279, 19175002942688032928599, # Newman-Shanks-Williams 
+                  40487, 6692367337, # Non-generous 
+                  5741, 33461, 44560482149, 1746860020068409, 68480406462161287469, 13558774610046711780701, 
+                  4125636888562548868221559797461449,  # Pell 
+                  211, 2309, 2311, 30029, 200560490131, 304250263527209, 23768741896345550770650537601358309, # Primorial 
+                  1111111111111111111, 11111111111111111111111, # Repunit 
+                  683, 2731, 43691, 174763, 2796203, 715827883, 2932031007403, 768614336404564651, 
+                  201487636602438195784363, 845100400152152934331135470251, 56713727820156410577229101238628035243, # Wagstaff
+                  383, 32212254719, 2833419889721787128217599, 195845982777569926302400511, 4776913109852041418248056622882488319 # Woodall
+                  ]
+        actual = all(miller_rabin_minimal(p) for p in primes)
+        expected = True
+        assert actual == expected, "miller_rabin_minimal returned False for a known prime!"  # TODO: print which ones.
+    
+    def test_composites(self):
+        """
+        Ensure that miller_rabin returns False for notable composites. 
+        See:
+            https://en.wikipedia.org/wiki/Strong_pseudoprime
+            http://www.s369624816.websitehome.co.uk/rgep/cartable.html (list of Carmichael numbers)
+            https://math.dartmouth.edu/~carlp/PDF/paper25.pdf (strong pseudoprimes for bases 2, 3, and 5)
+        """
+        composites = [23**2, 233 * 239, # Simple composites 
+                      561, 41041, 825265, 321197185, 5394826801, 232250619601, 9746347772161, 1436697831295441,
+                      60977817398996785, 7156857700403137441, 1791562810662585767521, 87674969936234821377601,
+                      6553130926752006031481761, 1590231231043178376951698401, 35237869211718889547310642241,
+                      32809426840359564991177172754241, 2810864562635368426005268142616001, 
+                      349407515342287435050603204719587201, # Carmichael numbers
+                      25326001, 161304001, 960946321, 1157839381, 3215031751, 3697278427, 5764643587, 
+                      6770862367, 14386156093, 15579919981, 18459366157, 19887974881, 21276028621, # Strong pseudoprimes for bases 2, 3, 5
+                      3825123056546413051 # Strong pseudoprime for bases 2, 3, 5, 7, 11, 13, 17, 19, and 23 
+                      ] 
+        actual = not any(miller_rabin_minimal(c) for c in composites) 
+        expected = True
+        assert actual == expected, "miller_rabin_minimal returned True for a known composite!" # TODO: print which ones. 
     
