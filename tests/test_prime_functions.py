@@ -5,10 +5,10 @@ Test functions in src/prime_functions.py.
 """
 
 import pytest
+import numpy as np
 
 from prime_functions import prime_factors, num_divisors, proper_divisors, \
-    get_primes, get_primes_without_numpy, \
-    is_prime_trial, miller_rabin_classic, miller_rabin_minimal
+                            is_prime_trial, get_primes, miller_rabin
 
 class TestPrimeFactors(object):
     """
@@ -128,6 +128,38 @@ class TestProperDivisors(object):
         actual = proper_divisors(n)
         assert actual == expected, f"proper_divisors({n}) returned {actual} instead of {expected}"
 
+class TestIsPrimeTrial(object):
+    """
+    Test is_prime_trial function. 
+    """
+    
+    def test_negative_input(self):
+        """
+        Test function raises a ValueError for negative input. 
+        """
+        with pytest.raises(ValueError) as info:
+            is_prime_trial(n=-1)
+        assert info.match("Number must be positive!")
+    
+    def test_invalid_float_input(self):
+        """
+        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
+        """
+        tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
+        for n in tests:
+            with pytest.raises(ValueError) as info:
+                is_prime_trial(n)
+            assert info.match("Number must be an integer!")
+    
+    def test_valid_float_input(self):
+        """
+        Test function is valid for float input sufficiently close to integer values.  
+        """
+        n = 7 + 1e-10
+        expected = is_prime_trial(7)
+        actual = is_prime_trial(n)
+        assert actual == expected, f"is_prime_trial({n}) returned {actual} instead of {expected}"
+
 class TestGetPrimes(object):
     """
     Test get_primes function. 
@@ -176,89 +208,29 @@ class TestGetPrimes(object):
         expected = get_primes(7)
         actual = get_primes(N)
         assert actual == expected, f"get_primes({N}) returned {actual} instead of {expected}"
-
-class TestGetPrimesWithoutNumpy(object):
-    """
-    Test get_primes_without_numpy function. 
-    TODO: test correct output. 
-    """
     
-    def test_negative_input(self):
+    def test_known_primes(self):
         """
-        Test function raises a ValueError for negative input. 
+        Test function correctly identifies all primes less than 100.
         """
-        with pytest.raises(ValueError) as info:
-            get_primes_without_numpy(N=-1)
-        assert info.match("Number must be positive!")
-    
-    def test_one(self):
-        """
-        Test function raises a ValueError for N = 1. 
-        """
-        with pytest.raises(ValueError) as info:
-            get_primes_without_numpy(N=1)
-        assert info.match("There are no primes smaller than 2!")
-    
-    def test_two(self):
-        """
-        Test function raises a ValueError for N = 2. 
-        """
-        with pytest.raises(ValueError) as info:
-            get_primes_without_numpy(N=2)
-        assert info.match("There are no primes smaller than 2!")
-    
-    def test_invalid_float_input(self):
-        """
-        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
-        """
-        tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
-        for N in tests:
-            with pytest.raises(ValueError) as info:
-                get_primes_without_numpy(N)
-            assert info.match("Number must be an integer!")
-    
-    def test_valid_float_input(self):
-        """
-        Test function is valid for float input sufficiently close to integer values.  
-        """
-        N = 7 + 1e-10
-        expected = get_primes(7)
-        actual = get_primes_without_numpy(N)
-        assert actual == expected, f"get_primes_without_numpy({N}) returned {actual} instead of {expected}"
         
-class TestIsPrimeTrial(object):
-    """
-    Test is_prime_trial function. 
-    """
+        primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 
+                  53, 59, 61, 67, 71, 73, 79, 83, 89, 97]               
+        expected = np.array(primes)
+        actual = get_primes(100)
+        assert np.equal(actual, expected), f"get_primes(100) returned {actual} instead of {expected}"    
     
-    def test_negative_input(self):
+    def test_known_primes_without_numpy(self):
         """
-        Test function raises a ValueError for negative input. 
+        Test function correctly identifies all primes less than 100 when with_numpy is False.
         """
-        with pytest.raises(ValueError) as info:
-            is_prime_trial(n=-1)
-        assert info.match("Number must be positive!")
-    
-    def test_invalid_float_input(self):
-        """
-        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
-        """
-        tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
-        for n in tests:
-            with pytest.raises(ValueError) as info:
-                is_prime_trial(n)
-            assert info.match("Number must be an integer!")
-    
-    def test_valid_float_input(self):
-        """
-        Test function is valid for float input sufficiently close to integer values.  
-        """
-        n = 7 + 1e-10
-        expected = is_prime_trial(7)
-        actual = is_prime_trial(n)
-        assert actual == expected, f"is_prime_trial({n}) returned {actual} instead of {expected}"
+        
+        expected = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 
+                    53, 59, 61, 67, 71, 73, 79, 83, 89, 97]        
+        actual = get_primes(100, with_numpy=False)
+        assert actual == expected, f"get_primes(100, with_numpy=False) returned {actual} instead of {expected}" 
 
-class TestMillerRabinClassic(object):
+class TestMillerRabin(object):
     """
     Test miller_rabin function. 
     """
@@ -268,7 +240,7 @@ class TestMillerRabinClassic(object):
         Test function raises a ValueError for negative input. 
         """
         with pytest.raises(ValueError) as info:
-            miller_rabin_classic(n=-1)
+            miller_rabin(n=-1)
         assert info.match("Number must be positive!")
     
     def test_invalid_float_input(self):
@@ -278,7 +250,7 @@ class TestMillerRabinClassic(object):
         tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
         for n in tests:
             with pytest.raises(ValueError) as info:
-                miller_rabin_classic(n)
+                miller_rabin(n)
             assert info.match("Number must be an integer!")
     
     def test_valid_float_input(self):
@@ -286,9 +258,9 @@ class TestMillerRabinClassic(object):
         Test function is valid for float input sufficiently close to integer values.  
         """
         n = 7 + 1e-10
-        expected = miller_rabin_classic(7)
-        actual = miller_rabin_classic(n)
-        assert actual == expected, f"miller_rabin_classic{n}) returned {actual} instead of {expected}"
+        expected = miller_rabin(7)
+        actual = miller_rabin(n)
+        assert actual == expected, f"miller_rabin{n}) returned {actual} instead of {expected}"
     
     def test_primes(self):
         """
@@ -321,67 +293,13 @@ class TestMillerRabinClassic(object):
                   201487636602438195784363, 845100400152152934331135470251, 56713727820156410577229101238628035243, # Wagstaff
                   383, 32212254719, 2833419889721787128217599, 195845982777569926302400511, 4776913109852041418248056622882488319 # Woodall
                   ]
-        actual = all(miller_rabin_classic(p) for p in primes)
+        actual = all(miller_rabin(p, minimal=True) for p in primes)
         expected = True
-        assert actual == expected, "miller_rabin_classic returned False for a known prime!"  # TODO: print which ones.
+        assert actual == expected, "miller_rabin returned False for a known prime!"  # TODO: print which ones.
     
-    def test_composites(self):
+    def test_primes_classic(self):
         """
-        Ensure that miller_rabin returns False for notable composites. 
-        See:
-            https://en.wikipedia.org/wiki/Strong_pseudoprime
-            http://www.s369624816.websitehome.co.uk/rgep/cartable.html (list of Carmichael numbers)
-            https://math.dartmouth.edu/~carlp/PDF/paper25.pdf (strong pseudoprimes for bases 2, 3, and 5)
-        """
-        composites = [23**2, 233 * 239, # Simple composites 
-                      561, 41041, 825265, 321197185, 5394826801, 232250619601, 9746347772161, 1436697831295441,
-                      60977817398996785, 7156857700403137441, 1791562810662585767521, 87674969936234821377601,
-                      6553130926752006031481761, 1590231231043178376951698401, 35237869211718889547310642241,
-                      32809426840359564991177172754241, 2810864562635368426005268142616001, 
-                      349407515342287435050603204719587201, # Carmichael numbers
-                      25326001, 161304001, 960946321, 1157839381, 3215031751, 3697278427, 5764643587, 
-                      6770862367, 14386156093, 15579919981, 18459366157, 19887974881, 21276028621, # Strong pseudoprimes for bases 2, 3, 5
-                      3825123056546413051 # Strong pseudoprime for bases 2, 3, 5, 7, 11, 13, 17, 19, and 23 
-                      ] 
-        actual = not any(miller_rabin_classic(c) for c in composites) 
-        expected = True
-        assert actual == expected, "miller_rabin_classic returned True for a known composite!" # TODO: print which ones.
-        
-class TestMillerRabinMinimal(object):
-    """
-    Test miller_rabin function. 
-    """
-    
-    def test_negative_input(self):
-        """
-        Test function raises a ValueError for negative input. 
-        """
-        with pytest.raises(ValueError) as info:
-            miller_rabin_minimal(n=-1)
-        assert info.match("Number must be positive!")
-    
-    def test_invalid_float_input(self):
-        """
-        Test function raises ValueErrors for float inputs that are not meant to represent integers. 
-        """
-        tests = [7.1, 7.01, 7 + 1e-3, 7 + 1e-4, 7 + 1e-5]
-        for n in tests:
-            with pytest.raises(ValueError) as info:
-                miller_rabin_minimal(n)
-            assert info.match("Number must be an integer!")
-    
-    def test_valid_float_input(self):
-        """
-        Test function is valid for float input sufficiently close to integer values.  
-        """
-        n = 7 + 1e-10
-        expected = miller_rabin_minimal(7)
-        actual = miller_rabin_minimal(n)
-        assert actual == expected, f"miller_rabin_minimal{n}) returned {actual} instead of {expected}"
-    
-    def test_primes(self):
-        """
-        Ensure that miller_rabin returns True for known primes.
+        Ensure that miller_rabin returns True for known primes (with classic bases).
         Examples extracted from this relevant Wikipedia page: 
             https://en.wikipedia.org/wiki/List_of_prime_numbers
         """
@@ -410,9 +328,9 @@ class TestMillerRabinMinimal(object):
                   201487636602438195784363, 845100400152152934331135470251, 56713727820156410577229101238628035243, # Wagstaff
                   383, 32212254719, 2833419889721787128217599, 195845982777569926302400511, 4776913109852041418248056622882488319 # Woodall
                   ]
-        actual = all(miller_rabin_minimal(p) for p in primes)
+        actual = all(miller_rabin(p, minimal=False) for p in primes)
         expected = True
-        assert actual == expected, "miller_rabin_minimal returned False for a known prime!"  # TODO: print which ones.
+        assert actual == expected, "miller_rabin(minimal=False) returned False for a known prime!"  # TODO: print which ones.    
     
     def test_composites(self):
         """
@@ -432,7 +350,32 @@ class TestMillerRabinMinimal(object):
                       6770862367, 14386156093, 15579919981, 18459366157, 19887974881, 21276028621, # Strong pseudoprimes for bases 2, 3, 5
                       3825123056546413051 # Strong pseudoprime for bases 2, 3, 5, 7, 11, 13, 17, 19, and 23 
                       ] 
-        actual = not any(miller_rabin_minimal(c) for c in composites) 
+        actual = not any(miller_rabin(c, minimal=True) for c in composites) 
         expected = True
-        assert actual == expected, "miller_rabin_minimal returned True for a known composite!" # TODO: print which ones. 
+        assert actual == expected, "miller_rabin returned True for a known composite!" # TODO: print which ones. 
+    
+    def test_composites_classic(self):
+        """
+        Ensure that miller_rabin returns False for notable composites (with classic bases). 
+        See:
+            https://en.wikipedia.org/wiki/Strong_pseudoprime
+            http://www.s369624816.websitehome.co.uk/rgep/cartable.html (list of Carmichael numbers)
+            https://math.dartmouth.edu/~carlp/PDF/paper25.pdf (strong pseudoprimes for bases 2, 3, and 5)
+        """
+        composites = [23**2, 233 * 239, # Simple composites 
+                      561, 41041, 825265, 321197185, 5394826801, 232250619601, 9746347772161, 1436697831295441,
+                      60977817398996785, 7156857700403137441, 1791562810662585767521, 87674969936234821377601,
+                      6553130926752006031481761, 1590231231043178376951698401, 35237869211718889547310642241,
+                      32809426840359564991177172754241, 2810864562635368426005268142616001, 
+                      349407515342287435050603204719587201, # Carmichael numbers
+                      25326001, 161304001, 960946321, 1157839381, 3215031751, 3697278427, 5764643587, 
+                      6770862367, 14386156093, 15579919981, 18459366157, 19887974881, 21276028621, # Strong pseudoprimes for bases 2, 3, 5
+                      3825123056546413051 # Strong pseudoprime for bases 2, 3, 5, 7, 11, 13, 17, 19, and 23 
+                      ] 
+        actual = not any(miller_rabin(c, minimal=False) for c in composites) 
+        expected = True
+        assert actual == expected, "miller_rabin(minimal=False) returned True for a known composite!" # TODO: print which ones.
+    
+        
+
     

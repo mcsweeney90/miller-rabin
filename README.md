@@ -2,12 +2,6 @@
 [![codecov](https://codecov.io/gh/mcsweeney90/miller-rabin/branch/main/graph/badge.svg?token=SLBOGBDXU7)](https://codecov.io/gh/mcsweeney90/miller-rabin)
 # Miller-Rabin
 
-This repository contains a Python implementation of the Miller-Rabin primality test and a few other prime number-based functions. I've occasionally found them useful for coding challenges and that kind of thing, however this was really just an exercise for myself while learning to use `pytest`.     
+This repository contains a Python implementation of the [Miller-Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) primality test, a probabilistic algorithm which determines, to a high degree of accuracy, whether or not an integer is prime. Also implemented are a few other simple functions related to prime numbers which I've occasionally found useful for coding challenges and that kind of thing. There are far more efficient implementations of all these functions out there; this repo was really just an exercise when learning to use `pytest` for unit testing.     
 
-## Navigation
-
-TODO.
-
-## How the Miller-Rabin algorithm works
-
-TODO.
+  

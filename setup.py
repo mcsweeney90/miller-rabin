@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(name="prime_functions",
       version="0.1.0",
-      description="Common prime number functions",
+      description="Prime number-related functions",
       author="Tom McSweeney",
       packages=find_packages("src"),
       package_dir={"": "src"},
@@ -14,4 +14,3 @@ setup(name="prime_functions",
                         "pytest==6.2.4"
                         ],
       )
-
