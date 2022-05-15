@@ -4,4 +4,4 @@
 
 This repository contains a Python implementation of the [Miller-Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) primality test, a probabilistic algorithm which determines, to a high degree of accuracy, whether or not an integer is prime. Also implemented are a few other simple functions related to prime numbers which I've occasionally found useful for coding challenges and that kind of thing, although of course there are far more efficient implementations of all these functions out there!
 
-Note: apparently I exhausted Travis CI's free plan, hence the badge above!   
+Note: apparently I exhausted Travis CI's free plan, hence the badge above! Ah, well...   
