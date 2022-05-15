@@ -57,6 +57,7 @@ class TestPrimeFactors(object):
         actual = prime_factors(1)
         expected = {}
         assert actual == expected, f"prime_factors(1) returned {actual} instead of {expected}"
+
         
 class TestNumDivisors(object):
     """
@@ -95,6 +96,7 @@ class TestNumDivisors(object):
         actual = tuple(num_divisors(n) for n in [4, 6, 8, 9, 10, 12, 14, 15, 16, 18])
         expected = (3, 4, 4, 3, 4, 6, 4, 4, 5, 6)
         assert actual == expected, "num_divisors was incorrect for a small composite!"
+
         
 class TestProperDivisors(object):
     """
@@ -128,6 +130,7 @@ class TestProperDivisors(object):
         actual = proper_divisors(n)
         assert actual == expected, f"proper_divisors({n}) returned {actual} instead of {expected}"
 
+
 class TestIsPrimeTrial(object):
     """
     Test is_prime_trial function. 
@@ -160,10 +163,11 @@ class TestIsPrimeTrial(object):
         actual = is_prime_trial(n)
         assert actual == expected, f"is_prime_trial({n}) returned {actual} instead of {expected}"
 
+
 class TestGetPrimes(object):
     """
     Test get_primes function. 
-    TODO: test correct output. 
+    TODO: test output is correct. 
     """
     
     def test_negative_input(self):
@@ -230,6 +234,7 @@ class TestGetPrimes(object):
         actual = get_primes(100, with_numpy=False)
         assert actual == expected, f"get_primes(100, with_numpy=False) returned {actual} instead of {expected}" 
 
+
 class TestMillerRabin(object):
     """
     Test miller_rabin function. 
@@ -265,7 +270,7 @@ class TestMillerRabin(object):
     def test_primes(self):
         """
         Ensure that miller_rabin returns True for known primes.
-        Examples extracted from this relevant Wikipedia page: 
+        Examples extracted from this Wikipedia page: 
             https://en.wikipedia.org/wiki/List_of_prime_numbers
         """
         primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,
@@ -300,7 +305,7 @@ class TestMillerRabin(object):
     def test_primes_classic(self):
         """
         Ensure that miller_rabin returns True for known primes (with classic bases).
-        Examples extracted from this relevant Wikipedia page: 
+        Examples extracted from this Wikipedia page: 
             https://en.wikipedia.org/wiki/List_of_prime_numbers
         """
         primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,

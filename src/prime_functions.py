@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Prime number functions I've often found useful for coding challenges etc.
+Prime number-related functions that I've often found useful for coding challenges etc.
 """
 
 import numpy as np
 from math import sqrt, prod
+
 
 def prime_factors(n):
     """
@@ -26,7 +27,7 @@ def prime_factors(n):
     if n < 0:
         raise ValueError("Number must be positive!")
 
-    # If n is float of the form n.000... etc, then convert to int, else throw an error.
+    # If n is float of the form n.000... etc, then convert to int, else throw an error
     if isinstance(n, float):
         i = int(n)
         if abs(n - i) < 1e-6:
@@ -50,10 +51,11 @@ def prime_factors(n):
                     factors[p] += 1
                 except KeyError:
                     factors[p] = 1
-        if n == temp: # n is prime.
+        if n == temp: # n is prime
             factors[n] = 1
             n = 1
     return factors
+
 
 def num_divisors(n):
     """
@@ -71,6 +73,7 @@ def num_divisors(n):
         Number of divisors of n.
     """        
     return prod(e + 1 for e in prime_factors(n).values())
+
 
 def proper_divisors(n):
     """
@@ -105,6 +108,7 @@ def proper_divisors(n):
             divisors.append(i)
             divisors.append(n//i)
     return divisors[:-1] if (n > 1 and rt % 1 == 0) else divisors
+
 
 def is_prime_trial(n):
     """
@@ -147,6 +151,7 @@ def is_prime_trial(n):
         a += b
         b = 6 - b
     return True
+
 
 def get_primes(N, with_numpy=True):
     """
@@ -192,6 +197,7 @@ def get_primes(N, with_numpy=True):
         if sieve[p//2]:
             sieve[p*p//2::p] = [False] * ((N-p*p-1)//(2*p)+1)
     return [2] + [2*p+1 for p in range(1, N//2) if sieve[p]]
+
 
 def miller_rabin(n, minimal=True):
     """
